@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chemical Descriptor and Drug-likeness Calculator</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 20px;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        form {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            box-sizing: border-box;
+        }
+        button[type="submit"] {
+            background-color: #5cb85c;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        button[type="submit"]:hover {
+            background-color: #4cae4c;
+        }
+        .results {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .property-group {
+            margin-bottom: 10px;
+        }
+        .property-group h3 {
+            margin-top: 0;
+            color: #555;
+        }
+        .property {
+            margin-bottom: 5px;
+        }
+        .label {
+            font-weight: bold;
+            margin-right: 5px;
+        }
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Chemical Descriptor and Drug-likeness Calculator</h1>
+    <p>Enter a SMILES string to calculate its chemical descriptors and predict drug-likeness.</p>
+
+    <form method="POST">
+        <label for="smiles">SMILES String:</label>
+        <input type="text" id="smiles" name="smiles" placeholder="e.g., C1=CC=C(C=C1)O or CCO or CC(=O)Oc1ccccc1C(=O)O">
+        <button type="submit">Calculate</button>
+    </form>
+
+    {% if results %}
+    <div class="results">
+        <h2>Results for SMILES: {{ results.smiles }}</h2>
+        {% if results.error %}
+            <p class="error">{{ results.error }}</p>
+        {% else %}
+            <div class="property-group">
+                <h3>Physicochemical Properties</h3>
+                {% if results.physicochemical_properties %}
+                    <p class="property"><span class="label">Molecular Weight:</span> {{ results.physicochemical_properties.molecular_weight }}</p>
+                    <p class="property"><span class="label">LogP:</span> {{ results.physicochemical_properties.logP }}</p>
+                    <p class="property"><span class="label">TPSA:</span> {{ results.physicochemical_properties.TPSA }}</p>
+                    <p class="property"><span class="label">Number of Rings:</span> {{ results.physicochemical_properties.num_rings }}</p>
+                    <p class="property"><span class="label">Number of Rotatable Bonds:</span> {{ results.physicochemical_properties.num_rotatable_bonds }}</p>
+                {% else %}
+                    <p>No physicochemical properties available.</p>
+                {% endif %}
+            </div>
+
+            <div class="property-group">
+                <h3>Pharmacokinetics (Simplified)</h3>
+                {% if results.pharmacokinetics %}
+                    <p class="property"><span class="label">HIA Absorption:</span> {{ results.pharmacokinetics.HIA_absorption }}</p>
+                    <p class="property"><span class="label">BBB Penetration:</span> {{ results.pharmacokinetics.BBB_penetration }}</p>
+                 {% else %}
+                    <p>No pharmacokinetic properties available.</p>
+                {% endif %}
+            </div>
+
+            <div class="property-group">
+                <h3>Drug-likeness</h3>
+                {% if results.drug_likeness %}
+                    <p class="property"><span class="label">Lipinski Violations:</span> {{ results.drug_likeness.Lipinski_violations }}</p>
+                    <p class="property"><span class="label">Ghose Filter:</span> {{ results.drug_likeness.Ghose_filter }}</p>
+                    <p class="property"><span class="label">Veber Rule:</span> {{ results.drug_likeness.Veber_rule }}</p>
+                    <p class="property"><span class="label">Muegge's Rule Pass:</span> {{ results.drug_likeness.Muegge_rule_pass }}</p>
+                    <p class="property"><span class="label">QED:</span> {{ results.drug_likeness.QED }}</p>
+                {% else %}
+                    <p>No drug-likeness properties available.</p>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+    {% endif %}
+</body>
+</html>
